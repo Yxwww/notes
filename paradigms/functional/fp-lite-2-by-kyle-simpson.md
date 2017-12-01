@@ -387,3 +387,40 @@ function compose(...args) {
 ```
 
 ## immutability
+
+```javascript
+const y = 3
+y++; // not allowed
+```
+
+> constant the variable itself cannot be resigned, assignment immutability
+
+`const` keyword , block scope, only the block const is in can re-assign it.
+
+Immutability mean value immutability, not assignment immutability
+
+Signal don't worry to it cannot be changed vs. Prevention to change
+
+ImmutableJS, `set` will change list, stores diff instead of completely clone the new array ( like Git )
+
+
+## Closure and Side Effects
+
+JS inspired by Scheme lang introduced closure (enables multi-paradigm)
+
+> Closure: is when a function "remembers" the variables around it even when that function is executed elsewhere
+
+Note: around the function not just inside. See unary function example below. Unary and One are both high confidence to be pure functions
+
+Write a function reference a variable inside of another function. If a function can be a value/passed around.
+
+```javascript
+function unary(fn) {
+  return function one(arg) {
+    return fn(arg);  // closure remembers fn
+  }
+}
+
+// is unary pure ? : yes ? - lol high degree of confidence
+// how about function one ? seems like it behave as pure function, fn can't be redefined , high degree of confidence
+```
