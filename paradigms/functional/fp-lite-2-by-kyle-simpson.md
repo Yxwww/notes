@@ -203,6 +203,8 @@ foo(function(v) {
 foo(bar);
 ```
 
+not / negate: eliminate points (param)
+
 ```javascript
 function isOdd(v) {
   return v$ 2 === 1;
@@ -212,7 +214,61 @@ function isEven(v) { // there's a point v
   return !isOdd(v);
 }
 
-isEven(isOdd)
 isEven(4);
+
+// we create a utilty
+function not (fn) {
+  return function negated(...args) {
+    return !fn(...args);
+  }
+}
+```
+practice
+
+```javascript
+var output = console.log.bind(console); // to support certain browser do hard bind console
+
+function printIf(predicate) {
+  return function(msg) {
+    if (predicate(msg)) {
+      output(msg);
+    }
+  }
+}
+
+function isShortEnough(str) {
+  return str.length <= 4;
+}
+// Goal: refactor this to point-free
+function isLongEnough(str) {
+  return !isShortEnough(str);
+}
+var msg1 = 'hello';
+// point version of printIf
+printIf(isShortEnough)(msg1)
+
+// provided util
+function when(fn) {
+  return function(predicate) {
+    return function(...args) {
+      if(predicate(...args)) {
+        return fn(...args);
+      }
+    }
+  }
+}
+
+// MARK: Solution
+
+// point free refactor
+function not(fn) {
+  return function negated(msg) {
+    return !fn(msg);
+  }
+}
+
+var printIf = when(output);
+// point free style of printIf
+printIf(isShortEnough)(msg1)
 ```
 
