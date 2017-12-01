@@ -29,6 +29,10 @@
 
 *referential transparency*: we could take that function call and replace it with its return, the rest of the program will behave transparently.
 
+- haskell compiler will take an advantage of this and speed up function calls
+
+*memoization* memorizing the work that's been done, new function will store the result of the input , return the result of that memory over and over again.
+
 - observably act as pure function
 - function F itself is not pure, but as long as it contains all relative side effects within itself we say it's pure function
   - encap possible side effects in the function
@@ -415,6 +419,8 @@ JS inspired by Scheme lang introduced closure (enables multi-paradigm)
 > Closure: is when a function "remembers" the variables around it even when that function is executed elsewhere
 
 Note: around the function not just inside. See unary function example below. Unary and One are both high confidence to be pure functions
+
+closure: Take a function and give it a memory
 
 Write a function reference a variable inside of another function. If a function can be a value/passed around.
 
