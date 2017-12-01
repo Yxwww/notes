@@ -25,6 +25,10 @@
 
 ## Purify Functions
 
+> a pure function is a function has referential transparency
+
+*referential transparency*: we could take that function call and replace it with its return, the rest of the program will behave transparently.
+
 - observably act as pure function
 - function F itself is not pure, but as long as it contains all relative side effects within itself we say it's pure function
   - encap possible side effects in the function
