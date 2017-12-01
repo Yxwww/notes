@@ -223,7 +223,7 @@ function not (fn) {
   }
 }
 ```
-practice
+### practice - currying
 
 ```javascript
 var output = console.log.bind(console); // to support certain browser do hard bind console
@@ -272,3 +272,118 @@ var printIf = when(output);
 printIf(isShortEnough)(msg1)
 ```
 
+## Composition
+
+> Core part of FP
+
+> motivation create boundary of what and how, make easier to reason about
+
+```javascript
+function sum(x, y) {
+  return x+ y;
+}
+function mult(x, y) {
+  return x * y;
+}
+
+// imperative international shipping rate
+// (3*4) + 5
+var x_y = mult(3, 4);
+sum(x_y, 5); // 17
+
+// ## Iteration 1:
+// reduce space style 1
+sum( multi(3, 4), 5);
+
+// ## Iteration 2:
+// reducer space style 2, abstraction
+function multAndSum(x, y, z) {
+  return sum( mult(x, y), z); // cares about how
+}
+
+multAndSum(3, 4, 5);
+// more declarative, DRY code ? not biggest motivation,
+// create boundary of what and how, multAndSum only care about what
+
+```
+
+### Higher Order Function
+
+> either or both takes one or more functions and or makes an function as output
+
+```javascript
+// ## Iteration 3:
+
+// a machine making machine, higher order function
+// take output of fn1, pump it into the input of fn2
+function pipe2(fn1, fn2) {
+  return function piped(arg1, arg2, arg3) {
+    return fn2(
+      fn1(arg1, arg2),
+      arg3
+    )
+  }
+}
+
+var multAndSum = pipe2(mult, sum);
+multAndSum(3,4,5);
+```
+
+
+```javascript
+// standard utility compose & pipe
+foo(bar(baz(2))); // Note: baz run first
+compose(foo, bar, baz)(2); // right to left use compose
+pipe(baz, bar, foo)(2); // left to right order use pipe
+// both compose / pipe are standard
+// sometimes pipe called flow to right
+```
+
+- practice
+
+```javascript
+function increment(x) {
+  return x +1;
+}
+function double(x) {
+  return x*2;
+}
+var f = composeRight(incrememt, double);
+var p = composeRight(double, incrememt);
+f(3)  // 7
+p(3); // 8
+
+
+// solution
+
+// my take: need to make it point-free
+function composeRight(fn1, fn2) {
+  return function(..args) {
+    return fn1(fn2(...args));
+  }
+}
+```
+
+- exercise - make your own compose && pipe
+
+```javascript
+
+// using gather operater
+function pipe(...fns) {
+  // remember result pipe as input to next function
+  return function(input) {
+    var result;
+    for (var i=0; i< fns.length; i++ ) {
+      result = fns[i](result);
+    }
+    return result;
+  }
+}
+
+function compose(...args) {
+  // reverse pipe
+  return pipe(...fns.reverse());
+}
+```
+
+## immutability
