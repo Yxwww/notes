@@ -93,5 +93,126 @@ foo(function(v) {
 })(3); // 6
 ```
 
-if we always give `foo` the same function, are we always gonna get the same function structure returns from `foo` ? ... high degree of `confidence`
+### Confidence level
+
+if we always give `foo` the same function, are we always gonna get the same function structure returns from `foo` ? ... high degree of *confidence*
+
+Now
+
+```javascript
+function getID(obj) {
+  return obj.id; // looks pure ? as it all based on input ?
+}
+
+getId({
+  get id() {
+    return Math.random();  // where is your confidence level ?
+  }
+})
+```
+
+if we can trust it, we can understand it.
+
+## Arguments
+
+- stick with unary/binary functions
+- produce unary/binary from nnary(variadic) function
+
+```javascript
+function unary(fn) {
+  return function one(arg) {
+    return fn(arg);
+  }
+}
+ function binary(fn) {
+   return function two(arg1, arg2) {
+     return fn(arg1, arg2);
+   }
+ }
+
+function f(...args) {
+  console.log(args)
+}
+
+var g = unary(f);
+var h = binary(f)
+
+g(1,2,3,4) // [1]
+h(1,2,3,4) // [1,2]
+```
+
+```javascript
+// produce a function flip the first two argument
+function flip(fn) {
+  return function flipped(arg1, arg2, ...args) {
+    return fn(arg2, arg1, ...args);
+  }
+}
+function f(...args) {
+  console.log(args);
+}
+var g = flip(f); // g transpose f
+
+g(1,2,3,4) // [2,1,3,4]
+```
+
+`.apply`
+
+```javascript
+// spread/apply args for function f
+function spreadArgs(fn) {
+  return function spread(args) {
+    return fn(...args)
+  }
+}
+function f(x, y, z, w) {
+  console.log(x + y + z + w)
+}
+var g = spreadArgs(f);
+g([1,2,3,4]);
+```
+
+### homework
+
+`.unapply` or `.gather`
+
+```javascript
+function gatherArgs(fn) {
+  return function gather(...args) {
+    return fn(..args)
+  }
+}
+function f(x, y, z, w) {
+  console.log(x + y + z + w)
+}
+var g = gatherArgs(f);
+g(1,2,3,4);
+```
+
+## POINT-FREE style
+
+> *point* - input towards a function
+> *point-free* - get rid of param mapping between the param and argument pass through
+
+```javascript
+// v is point - input of the function
+foo(function(v) {
+  return bar(v);
+});
+// why not - map v through
+foo(bar);
+```
+
+```javascript
+function isOdd(v) {
+  return v$ 2 === 1;
+}
+
+function isEven(v) { // there's a point v
+  return !isOdd(v);
+}
+
+isEven(isOdd)
+isEven(4);
+```
 
