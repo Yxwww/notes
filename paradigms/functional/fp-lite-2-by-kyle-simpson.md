@@ -496,4 +496,58 @@ add3(3)(4)(5); // 12
 
 ## Recursion
 
+> isomophism of iteration
+
+### example
+
+```javascript
+// sum array of integer
+function sumIter(...nums) {
+  var sum = 0
+  for(var i = 0; i<nums.length; i++) {
+    sum = sum + nums[i];
+  }
+  return sum;
+}
+
+sumIter(3,4,5,6,7,8,9);
+```
+
+
+itr-1:
+
+```javascript
+function sumIter(sum, ...nums) {
+  for (var i=0; i< nums.length; i++) {
+    sum = sum + nums[i];
+  }
+  return sum;
+}
+
+sumIter(3,4,5)
+```
+
+```javascript
+// param sum in fp is call head, ...nums is tail
+function sumIter(sum, ...nums) {
+  if (nums.lenght===0) {
+    return sum;
+  }
+
+  return sum + sumIter(...nums);
+}
+sumRecur(3,4,5)
+
+
+// OR peak into the second number to save one more function call when sumIter(3,4)
+
+function sumRecur(sum, num=0,...nums) {
+  if(nums.length == 0) return sum + nums;
+  return sum + sumRecur(num, ...nums);
+}
+```
+
+
+## Proper tail calls
+
 
