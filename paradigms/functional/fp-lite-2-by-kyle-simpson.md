@@ -434,3 +434,66 @@ function unary(fn) {
 // is unary pure ? : yes ? - lol high degree of confidence
 // how about function one ? seems like it behave as pure function, fn can't be redefined , high degree of confidence
 ```
+
+## Generalized to Specialized
+
+### Partial Application
+
+```javascript
+function add(x, y) {
+  return x + y;
+}
+
+function partial(fn, ...firstArgs) {
+  // partial application
+  return function applied(...lastArgs) {
+    return fn(...firstArgs, ...lastArgs);
+  }
+}
+// specialized function for general function add
+var addTo10 = partial(add, 10);
+
+addTo10(32); // 42
+```
+
+practice: `ajax` utilities focused on fetching users
+
+```javascript
+
+function ajax(url, opts) [
+  fetch(ajax)
+]
+
+function lookupUsers(url, ...firstArgs) {
+  return function applied(...lastArgs) {
+    return ajax(`/user/${url}`, ...firstArgs, ...lastArgs)
+  }
+}
+
+lookupUsers('/all') // should send ajax to "/users/all"
+```
+
+
+### Partial Application vs Currying
+
+*Similarity* - partial application and curriying are two techniques to specialize a generalized function
+
+ie: `.bind(this, ...args)` ignore `this`
+
+*Difference* - Partial take some of args now and the rest later. Currying provide a little bit at a time.
+
+```javascript
+var add3 = curry(function add3(x, y,z) {
+  return x + y + z;
+});
+var f = add3(3);
+var p = f(4);
+
+p(5);          // 12
+add3(3)(4)(5); // 12
+// create more and more function with specialization
+```
+
+## Recursion
+
+
