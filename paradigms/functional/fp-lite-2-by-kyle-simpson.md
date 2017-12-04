@@ -548,6 +548,262 @@ function sumRecur(sum, num=0,...nums) {
 ```
 
 
-## Proper tail calls
+## Proper tail calls - in ES6
+
+what's going to happen after calling recursive function ?
+Preserve state (stack frame): keep track of variable (state) of the function when nested recursion is called.
+
+Call stack is limited as memory is limited.
+
+Improvement (TCO - tail call optimization):
+- elimnimate memory creation in each recursion.
+- overwrite existing stack frame OR create a new stack frame throw away the old one
+- `sum + sumRecur(num, ...nums)` tells engine things are not done yet.
+  - maximum call stack in IE3,4 was like 13
+
+If you write your code in PTC(proper tail calls) form ,then you will never run out of memory for recursion
+
+```javascript
+"use strict" // PTC requires strict mode
+
+function foo(x) {
+  if (x< 10) retrurn x;
+  return bar(x); // PTC form very end of the flow control
+}
+function bar(x) {
+  return x / 2;
+}
+
+foo(42):
+
+// recursive scenario
+
+function foo(x) {
+  if (x%2 == 1) {
+    x = Math.round(x/3);
+  }
+  else {
+    x = x/2;
+  }
+  if (x < 10) return x;
+  return foo(x); // PTC form
+}
+
+// refactor sumRecur
+
+function sumRecur(sum, num, ...nums) {
+  if (nums.length == 0) return sum + num;
+  return sum + sumRecur(num, ...nums): // OLD  - goal to get rid of sum var
+}
+
+function sumRecur(...nums) {
+  return recur(...nums);
+
+  function recur(sum, num, ...nums) {
+    sum += num;
+    if (nums.length===0) return sum;
+    return recur(sum, ...nums); // ptc form
+  }
+}
+
+sumRecur(3,4,5)
+// to make recur only get to recreate once
+
+var sumRecur = (function() {
+  return function()
+})
+
+```
+
+
+## List Transformation
+
+## Culmination Solutions
+
+Exercises:
+
+1. Write two functions, each which return a fixexd nu,ber(different from each other)  when called
+```javascript
+function fn1() {
+  return 1;
+}
+function fn2() {
+  return 2;
+}
+```
+
+2. Write an `add()` function that takes two numbers and adds them and returns the result. Call `add(..)` with the results of your two functions from (1) and print the result to the console
+
+```javascript
+function add(num1, num2) {
+  return num1 + num2;
+}
+console.log(add(fn1(), fn2()));
+```
+
+3. Wirte and `add2(..)` that takes two functions instead of two numbers, and it calls those two functions and then sends those values to `add(..)` , just like you did in (2) above.
+
+```javascript
+function add2(fn1, fn2) {
+  return add(fn1(), fn2())
+}
+console.log(add2(fn1, fn2));
+```
+
+4. Replace your two functions from (1) with a single function that takes a value and returns a function back, where the returned function will return the value when it's called
+
+utility name: `constant`
+
+```javascript
+function constant(val) {
+  return function() {
+    return val;
+  };
+}
+
+add2(constant(2), constant(3))
+```
+
+5. Write an `addn(..)` that can take an array of 2 or more functions ,and using only `add2(..)`, adds them together. Try it with a loop. Try it without a loop(recursion). Try it with built-in array functional helpers (map/reduce)
+
+```javascript
+// Try with loop
+function addn(fns) {
+  if (fns.length==0) {
+    return 0;
+  }
+  var array = fns.slice();
+  var first, second, sum;
+  for (var i=0; i < array.length, i++) {
+    first = array[i];
+    second = array[i+1];
+    array[i+1] = add2(first, second);
+  }
+  return array[]
+}
+addn(constant(1),constant(2)) // 3;
+
+// better approach leave add in the end
+function addn(fns) {
+  fns = fns.slice();
+  while (fns.length > 2) {
+    let [fn0, fn1, ...rest] = fns;
+    fns = [
+      function() { // returns function instead of directly do calculation right away, delay the calculation til the very end
+        return add2(fn0, fn1);
+      },
+      ...rest
+    ]
+  }
+  return add2(fns[0], fns[1])
+}
+
+addn([constant(1), constant(2)])
+
+
+// Try with recursion
+function addn(first, second, ...fns) {
+  first = add2(first, second)
+  if(fns.length > 0) {
+    return addn(first, fns)
+  }
+  return addn(first)
+}
+addn(constant(1),constant(2)) // 3;
+// Recursion with array as args
+function addn([fn0, fn1, ...fns]) {
+  if (fns.length > 0) {
+    return addn([
+      function () {
+        return add2(fn0, fn1);
+      },
+      ...fns
+    ])
+  }
+}
+addn([constaint(3), constant(5)])
+
+// Try reduce with args array
+function addn([...fns]) {
+  return fns.reduce(function(composedFn, cur) {
+    return [
+      function() {
+        add2(composedFn, cur)
+      }
+    ]
+  })() // as reduce return a giant function need to invoke
+}
+
+```
+
+exercise 6:
+
+Start with an array of odd and even numbers (with some duplicates), and trim it down to only have unique values.
+
+```javascript
+
+// my approach with filter
+const array = [1,2,3,4,5,6,1,2,3,4]
+function filterRemember(array) {
+  return array.filter(rememberFilter());
+  function rememberFilter() {
+    const existedElem = [];
+    return function isElementOccurred(element) {
+      console.log(existedElem.indexOf(element))
+      if (existedElem.indexOf(element) !== -1) {
+        return false
+      }
+      existedElem.push(element)
+      return true
+    }
+  }
+}
+var arr = filterRemember(array)
+console.log(arr)
+
+// solution with filter
+array.filter(function(v, index, arr){
+  if (index === arr.indexOf(v)) {
+    return true;
+  }
+  return false;
+});
+
+// solution indicate using reduce
+// attemp with reduce
+const array = [1,2,3,4,5,6,1,2,3,4]
+var arr = array.reduce(function(acc, cur) {
+  if (acc.indexOf(cur) === -1) {
+    return acc.concat(cur) // use concat to enforece immutability
+  }
+  return acc
+}, []) // as reduce accumulator remembers existed elements
+console.log(arr)
+```
+
+exercise 6 and 7
+
+```javascript
+const array = [1,2,3,4,5,6,1,2,3,4]
+var sum =
+addn(
+  array.reduce(function(acc, cur) { // reducer
+    if (acc.indexOf(cur) === -1) {
+      return acc.concat(cur) // use concat to enforece immutability
+    }
+    return acc
+  }, []) // as reduce accumulator remembers existed elements
+  .filter(function(v) { // predicate
+    return v % 2 ==0;
+  })
+  .map(constant) // turn them into constant with map
+)
+
+console.log(arr)
+```
+
+currently we don't know how to compose functions with different shape
+ie: reducer, predicate, constant
+
 
 
