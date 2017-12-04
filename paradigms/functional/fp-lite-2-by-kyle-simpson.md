@@ -806,4 +806,40 @@ currently we don't know how to compose functions with different shape
 ie: reducer, predicate, constant
 
 
+## Fusion
+
+> Fusion with similiar shape of operator
+
+```javascript
+function add1(v) {
+  return v + 1;
+}
+function mul2(v) {return v * 2};
+function div3(v) { return v / 3};
+
+var list = [1,2,3,4];
+lis.map(add1).map(mul2).map(div3);
+// problem ... create three intermediate list memory waste
+
+function composeRight(fn1, fn2) {
+  return function(...args) {
+    return fn1(fn2(...args));
+  }
+}
+// when the shape of the operator is compatible
+list.map(
+  [div3,mul2, add1].reduce(composeRight)
+)
+
+```
+
+
+## Transducing
+
+> Fusion with not similiar shape of operator
+
+Note: difficult to wrap head around but not difficult to use
+
+
+
 
