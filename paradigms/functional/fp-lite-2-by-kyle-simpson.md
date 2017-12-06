@@ -843,3 +843,74 @@ Note: difficult to wrap head around but not difficult to use
 
 
 
+
+## Async
+
+Operation on existing data structure. What if data comes over time?
+
+Functional Programming overtime
+
+Eager vs Lazy
+
+```javascript
+var a = [];
+var b = mapLazy(a, function(v) {
+  return v * 2;
+})
+
+a.push(1);
+a[0]; // 1
+b[0]; // 2
+
+a.push(2);
+a[1]; // 2
+b[1]; // 4
+
+
+var a = new LazyArray();
+setInterval(function everySecond() {
+  a.push(Math.random());
+}, 1000)
+
+// *********
+var b = a.map(function(v) {
+  return v * a;
+})
+
+b.forEach(function onValue(v) {
+  console.log(v);
+}
+```
+
+## Observables
+
+```javascript
+var a = new Rx.Subject();
+setInterval(function everySecond() {
+  a.next(Math.random());
+})
+
+var b = a.map(function(v) {
+  return v * 2
+})
+
+b.subscribe(function onValue(v) {
+  console.log(v);
+});
+```
+
+## Recap
+
+Code focus on the what not how.
+
+- Avoid Side Effects
+- Point-Free
+- Composition
+- Immutability
+- Closure
+  - closure if a function remembers lexical variables when executed in a different scope
+- List & Data Structure Operations
+  - `adapt` map, filter ,reduce to any data structures.
+- Async (observables)
+
+TODO: finish up exercises
