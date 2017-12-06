@@ -841,6 +841,70 @@ list.map(
 Note: difficult to wrap head around but not difficult to use
 
 
+```javascript
+function add1(v) {return v+1}
+function isOdd(v) {return v%2==1};
+function sum(total, v) {return total + v}
+var list = [1,2,3,4]
+
+list
+.map(add1)
+.filter(isOdd)
+.reduce(sum)
+
+// First notice - shape is different
+// map, reduce, filter them selfs are incompatible
+
+
+// ## Step 1
+// turn map, filter into reduce as wel
+
+function mapWithReduce(arr, mappingFn) {
+  return arr.reduce(function reducer(list,v){
+    list.push(mappingFn(v));
+    return list;
+  }, [])
+}
+function filterWithReduce(arr, predicateFn){
+  return arr.reduce(function reducer(list, v){
+    if (predicateFn(v)) list.push(v);
+    return list;
+  })
+}
+
+
+list = mapWithReduce(list ,add1);
+list = filterWithReduce(list ,isOdd);
+list.reduce(sum);
+
+// still three functions
+
+// extract reducers out of mapWithReduce, filterWithReduce
+function mapReduer(mappingFn) {
+  return function reducer(list, v) {
+    listCombination(list, mappingFn(v));
+    return list;
+  }
+}
+
+function filterReducer(predicateFn) {
+  return function reducer(list, v) {
+    if (predicatefn(v)) return listCombination(list, v)
+    return list;
+  }
+}
+
+list.
+reduce(mapReducer(add1), []).
+reduce(filterReducer(isOdd), []).
+reduce(sum);
+
+function listCombination(list, v) {
+  list.push(v);
+  return list;
+}
+
+```
 
 
 
