@@ -105,3 +105,12 @@ what if Observables are infinite, ie UI events. When do we halt or use the next 
 Flattened Observable dispose(), won't affect inner observable
 
 ## TakeUntil
+
+```javascript
+{..1...2....3}.takeUntil( // source collection
+{........4})              // stop collection
+
+// yield
+{..1...2..}
+
+```
