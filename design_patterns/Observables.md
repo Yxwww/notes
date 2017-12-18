@@ -75,7 +75,7 @@ Observable.fromEvent = function(dom, eventName) {
 
 Three main ways to flatten Observable of Observables
 
-`concatAll`
+`concatAll` `mergeAll` `SwitchLatest`
 
 Solves `race condition`: top -> down, left -> right, right order
 
@@ -113,4 +113,121 @@ Flattened Observable dispose(), won't affect inner observable
 // yield
 {..1...2..}
 
+```
+
+As soon as takeUntil stops, will complete the source collection.
+
+
+## mergeAll & Switch Latest
+
+`mergeAll`
+
+```javascript
+{
+    {1}
+      {2} ..... {3}
+           {4}
+}.mergeAll()
+
+{1, 2, 4, 3}
+```
+
+`switchLatest`
+
+```javascript
+{
+    {1},
+      {2 .......... 3},
+        { } // this observable kills {3}
+           {4}
+}.switchLatest()
+
+{1...2...4} // where did {3} go ? { } as it's a new observable comes with
+```
+
+instead of building machine to compute the answer, we are building the answer declaratively
+
+## Netflix search box
+
+- What collections do I have?
+- What collections do I want ?
+- How do I get the collections that I have to the collections I want?
+- Once I got the collection that I want what I am I gonna do with the data that comes out of it ?
+
+For auto complete box:
+
+Collection we have:
+
+1. key press
+2. ajax to server after key press
+
+```javascript
+var searchResultSets =
+    keyPresses.
+    throttle(250).
+    map(
+        key => getJSON('/searchResults?q=' + input.value).
+        retry(3).
+        takeUntil(keyPresses)
+        ).
+    concatAll(); // concat all with takeUntil is like switchLatest
+
+// refactor with switchLatest
+var searchResultSets =
+    keyPresses.
+    throttle(250).
+    map( // creates two dimensional event
+        key => getJSON('/searchResults?q=' + input.value). // getJSON will call xhr.abort()
+        retry(3)
+        ).
+    switchLatest(); // concat all with takeUntil is like switchLatest
+
+
+
+searchResultSets.forEach(
+    resultSet => updateSearchResults(resultSet),
+    error => showMessage('the server appears to be down')
+)
+```
+
+Promises are not good with user interface design <= Promises cannot be cancelled, retry
+
+
+## Multi-dimension collections
+
+```javascript
+var authorizations =
+   player.
+      init().
+      map(() =>
+         playAttempts.
+            map(movieId =>
+               player.authorize(movieId).
+		       catch(e => Observable.empty). // catch and do nothing
+                     takeUntil(cancels)).
+            concatAll())). // two concatAll here because, concatAll only flattens 2D-array. As this is 3D array so we have to concatAll twice
+      concatAll();
+
+authorizations.forEach(
+   license => player.play(license),
+   error => showDialog(“Sorry, can’t play right now.”));
+```
+
+
+`concatMap`, concatAll + map
+
+```javascript
+Array.prototype.concatMap = function(projectionFunctionThatReturnsArray) {
+    return this.
+	map(function(item) {
+		// ------------   INSERT CODE HERE!  ----------------------------
+		// Apply the projection function to each item. The projection
+		// function will return a new child array. This will create a
+		// two-dimensional array.
+		// ------------   INSERT CODE HERE!  ----------------------------
+     return projectionFunctionThatReturnsArray(item);
+	}).
+	// apply the concatAll function to flatten the two-dimensional array
+	concatAll();
+};
 ```
