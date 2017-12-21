@@ -20,6 +20,15 @@ One thing Polymer supports is two-way data binding, after started using Redux, I
 
 ### Hapiness in pieces
 
+#### JSON render on Object type prop
+
+```html
+<div>
+{{ anObjectProp }}
+<!-- renders actual { ... } json object -->
+</div>
+```
+
 #### declaritive prop binding attr
 ```html
     <input class="edit"
@@ -65,13 +74,69 @@ So far I haven't get to touch on the nasty stuff yet. Will update this section i
 
 Less boiler plate code compare to redux ofcourse. Although, if a user have not used redux may be confused by the syntax in vue. I would personally recommend go through Dan's free Redux [tutorial](https://egghead.io/courses/getting-started-with-redux) on egghead.io would be good way to learn when and how the code looks like the way they are presented.
 
-`state`, `actions`, `mutation` in Vue kind of map to `state`, `actions`, `reducer` in Redux which is very straight forward to understand.
+`state`, `actions`, `mutation` in Vue kind of map to `state`, `actions`([redux-thunk](https://github.com/gaearon/redux-thunk) flavour), `reducer` in Redux which is very straight forward to understand. `mutation` name sounds more friendly than `reducer` even though in functional programming reducer makes more sense in terms of it looks.
 
 ### Module
 Vuex has `module` which supports multiple "store" allows you to split your potentially "big" state and modulize them. Remember Dan Abbramov has talked about having one single store is fine especially
 
 ### Getter
 Vuex `getter` is like [reselect](https://github.com/reactjs/reselect) which creates computed value from state.
+
+
+### happiness in pieces
+
+#### Two-way Computed Property
+
+```javascript
+computed: {
+  message: {
+    get () {
+      return this.$store.state.obj.message
+    },
+    set (value) {
+      this.$store.commit('updateMessage', value)
+    }
+  }
+}
+```
+Certainly saves time to write handler for each data model. Please note this is not two way data binding between polymer parent/child prop binding.
+Sadly it doesn't work with vuex `mapState`.
+
+### Sadness in pieces
+
+#### two way data binding with v-model state
+
+```html
+<label for="weight">Weight</label><input type="text/submit/hidden/button" v-model="physique.weight" placeholder="Enter your weight here" name="weight" value="">
+
+<div>
+  weight: {{ physique.weight }}
+</div>
+<script>
+{
+  computed: {
+    physique: {
+        get() {
+          return this.$store.state.user.physique;
+        },
+        set(value) {
+          // wont reach here since two way data binding happens under the hood with v-model
+          console.log('physique updated', value)
+        }
+      }
+  }
+}
+</script>
+```
+
+There is this imperitive two way data binding happens under the hood.
+
+```html
+<label for="weight">Weight</label><input type="text/submit/hidden/button" :value="physique.weight" @input="updateUserPhysique" placeholder="Enter your weight here" name="weight" value="">
+```
+
+Uses proper v-bind, event listener instead.
+
 
 ## Polymer
 
