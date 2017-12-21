@@ -104,7 +104,10 @@ Sadly it doesn't work with vuex `mapState`.
 
 ### Sadness in pieces
 
-#### two way data binding with v-model state
+#### imperitive two way data binding with v-model on Object state
+
+One main aspect when I look at any frameworks is through how they deal with data structures. This example that says that there's no obvious improvement on Object.
+
 
 ```html
 <label for="weight">Weight</label><input type="text/submit/hidden/button" v-model="physique.weight" placeholder="Enter your weight here" name="weight" value="">
@@ -129,13 +132,13 @@ Sadly it doesn't work with vuex `mapState`.
 </script>
 ```
 
-There is this imperitive two way data binding happens under the hood.
+There is imperitive two way data binding happens under the hood. Changing input will directly modify user.physique.weight in the state.
 
 ```html
 <label for="weight">Weight</label><input type="text/submit/hidden/button" :value="physique.weight" @input="updateUserPhysique" placeholder="Enter your weight here" name="weight" value="">
 ```
 
-Uses proper v-bind, event listener instead.
+Uses proper v-bind, event listener instead. So this part is the same as polymer
 
 
 ## Polymer
