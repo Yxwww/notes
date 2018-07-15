@@ -104,7 +104,9 @@ Sadly it doesn't work with vuex `mapState`.
 
 ### Sadness in pieces
 
-#### imperitive two way data binding with v-model on Object state
+#### Implicity two way data binding with v-model on Object state
+
+Explained in the doc [https://vuex.vuejs.org/en/forms.html](https://vuex.vuejs.org/en/forms.html)
 
 One main aspect when I look at any frameworks is through how they deal with data structures. This example that says that there's no obvious improvement on Object.
 
